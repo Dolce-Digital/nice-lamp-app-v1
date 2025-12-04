@@ -1,74 +1,46 @@
+import 'dotenv/config';
 import { json } from '@sveltejs/kit';
+import OpenAI from 'openai';
 
 export async function POST({ request }) {
-  try {
-    const { season, vibe, language } = await request.json();
+	try {
+		const body = await request.json();
 
-    const prompt = `
-You are the NICE-LAMP Email Engine, specialized in boutique hotels.
+		// Initialize OpenAI client with env var
+		const client = new OpenAI({
+			apiKey: process.env.OPENAI_API_KEY
+		});
 
-Create a dual-output email with:
-- Season: ${season}
-- Tone family: ${vibe}
-- Language: ${language}
+		// Create the chat completion
+		const completion = await client.chat.completions.create({
+			model: "gpt-5.1",
+			messages: [
+				{
+					role: "system",
+					content:
+						"You are the Nice-Lamp Email Engine. You write boutique-hotel emails in a warm, sensory, elegant tone. Respond ONLY with the generated email content. No explanations, no JSON."
+				},
+				{
+					role: "user",
+					// send the user choices as structured context
+					content: `Season: ${body.season}\nTone family: ${body.vibe}\nLanguage: ${body.language}\n\nWrite a complete email suitable for this context.`
+				}
+			],
+			temperature: 0.7
+		});
 
-Follow NICE-LAMP emotional-luxury rules:
-- Chic, sensory, elegant
-- Story-driven for boutique hospitality
-- No clichés
-- No corporate tone
-- Use atmosphere, warmth, subtle persuasion
+		// Safely extract assistant text
+		const message = completion.choices?.[0]?.message?.content ?? "No content returned.";
 
-Output JSON ONLY in this format:
-
-{
-  "subject": "...",
-  "preview": "...",
-  "long_email": "...",
-  "short_email": "...",
-  "cta": "..."
+		return json({ ok: true, output: message });
+	} catch (err) {
+		console.error("Kernel error:", err);
+		return json(
+			{
+				ok: false,
+				error: err?.message ?? "Unknown kernel error"
+			},
+			{ status: 500 }
+		);
+	}
 }
-    `;
-
-    const apiRes = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "gpt-5.1",
-        messages: [
-          { role: "system", content: "You are the NICE-LAMP Email Engine." },
-          { role: "user", content: prompt }
-        ],
-        response_format: { type: "json_object" }
-      })
-    });
-
-    const data = await apiRes.json();
-
-    // ✅ NEW API: JSON output is in data.choices[0].output_text
-    const raw = data?.choices?.[0]?.output_text;
-
-    if (!raw) {
-      console.error("OpenAI returned unexpected structure:", data);
-      return json({ error: "Kernel received unexpected response format." }, { status: 500 });
-    }
-
-    let parsed;
-    try {
-      parsed = JSON.parse(raw);
-    } catch (e) {
-      console.error("JSON parse error:", e, raw);
-      return json({ error: "Model returned invalid JSON." }, { status: 500 });
-    }
-
-    return json(parsed);
-
-  } catch (error) {
-    console.error("Kernel error:", error);
-    return json({ error: "Kernel failed." }, { status: 500 });
-  }
-}
-
