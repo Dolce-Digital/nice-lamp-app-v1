@@ -48,11 +48,19 @@ Output JSON ONLY in this format:
 
     const data = await apiRes.json();
 
+    // ✅ NEW API: JSON output is in data.choices[0].output_text
+    const raw = data?.choices?.[0]?.output_text;
+
+    if (!raw) {
+      console.error("OpenAI returned unexpected structure:", data);
+      return json({ error: "Kernel received unexpected response format." }, { status: 500 });
+    }
+
     let parsed;
     try {
-      parsed = JSON.parse(data.choices[0].message.content);
+      parsed = JSON.parse(raw);
     } catch (e) {
-      console.error("JSON parse error:", e);
+      console.error("JSON parse error:", e, raw);
       return json({ error: "Model returned invalid JSON." }, { status: 500 });
     }
 
@@ -63,3 +71,4 @@ Output JSON ONLY in this format:
     return json({ error: "Kernel failed." }, { status: 500 });
   }
 }
+
