@@ -269,4 +269,4 @@
     overflow: auto;
     border-radius: 0.75rem;
    border: 1px solid #ccc;
-
+}
