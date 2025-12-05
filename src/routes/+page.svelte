@@ -1,188 +1,220 @@
-<script lang="ts">
+<script>
   let hotelName = "";
-  let language = "de";
+  let language = "";
   let season = "";
   let vibe = "";
   let emailType = "";
-
   let output = "";
   let loading = false;
-  let error = "";
 
   async function generateEmail() {
-    error = "";
-    output = "";
+    if (!emailType) {
+      alert("Please choose an email type.");
+      return;
+    }
+
     loading = true;
+    output = "";
 
-    try {
-      if (!emailType) {
-        throw new Error("Veuillez choisir un type d’email.");
-      }
-
-      const payload = {
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         hotelName,
         language,
         season,
         vibe,
         emailType
-      };
+      })
+    });
 
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Erreur serveur.");
-      }
-
-      const data = await res.json();
-      output = data.output ?? "";
-    } catch (err: any) {
-      error = err?.message ?? "Une erreur est survenue.";
-    } finally {
-      loading = false;
-    }
+    const data = await res.json();
+    output = data.output || "No output received.";
+    loading = false;
   }
 </script>
 
-<main class="page">
-  <div class="nl-container">
-    <h1 class="title">Nice-Lamp Email Engine</h1>
-    <p class="subtitle">
-      Choisissez le contexte, cliquez, et laissez la machine écrire pour vous.
-    </p>
+<div class="page-container">
+  <h1>Nice-Lamp Email Engine</h1>
+  <p class="subtitle">Boutique Hospitality · Emotional Luxury · Powered by GPT-5.1</p>
 
-    <form class="form" on:submit|preventDefault={generateEmail}>
-      <!-- Hotel name -->
-      <div class="field-row">
-        <label>
-          Hotel name
-          <input
-            type="text"
-            bind:value={hotelName}
-            placeholder="Your hotel name"
-          />
-        </label>
-      </div>
+  <div class="card">
+    <h2>Email Generator</h2>
 
-      <!-- Language + Season -->
-      <div class="field-row two-cols">
-        <label>
-          Language
-          <select bind:value={language}>
-            <option value="de">Deutsch</option>
-            <option value="fr">Français</option>
-            <option value="en">English</option>
-            <option value="nl">Nederlands</option>
-          </select>
-        </label>
+    <div class="grid">
+      <label>
+        Hotel name
+        <input type="text" bind:value={hotelName} placeholder="Your hotel name" />
+      </label>
 
-        <label>
-          Season (optional)
-          <select bind:value={season}>
-            <option value="">No season</option>
-            <option value="Winter">Winter</option>
-            <option value="Spring">Spring</option>
-            <option value="Summer">Summer</option>
-            <option value="Autumn">Autumn</option>
-            <option value="Christmas">Christmas</option>
-          </select>
-        </label>
-      </div>
+      <label>
+        Language
+        <select bind:value={language}>
+          <option value="">Choose language</option>
+          <option value="de">Deutsch</option>
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+          <option value="nl">Nederlands</option>
+        </select>
+      </label>
 
-      <!-- Vibe + Email Type -->
-      <div class="field-row two-cols">
-        <label>
-          Vibe / Tone (optional)
-          <select bind:value={vibe}>
-            <option value="">No vibe</option>
-            <option value="Soft Luxury">Soft Luxury</option>
-            <option value="Romantic">Romantic</option>
-            <option value="Urban Chic">Urban Chic</option>
-            <option value="Nordic Minimalist">Nordic Minimalist</option>
-            <option value="Family Warmth">Family Warmth</option>
-          </select>
-        </label>
+      <label>
+        Season (optional)
+        <select bind:value={season}>
+          <option value="">No season</option>
+          <option value="Winter">Winter</option>
+          <option value="Spring">Spring</option>
+          <option value="Summer">Summer</option>
+          <option value="Autumn">Autumn</option>
+          <option value="Christmas">Christmas</option>
+        </select>
+      </label>
 
-        <label>
-          Email Type (Gearbox)*
-          <select bind:value={emailType}>
-            <option value="">Choose email type</option>
-            <option value="welcome">Welcome Email</option>
-            <option value="pre-stay">Pre-Stay Email</option>
-            <option value="on-stay">On-Stay Email</option>
-            <option value="post-stay">Post-Stay Email</option>
-            <option value="seasonal">Seasonal Campaign</option>
-            <option value="offer">Special Offer</option>
-            <option value="reengagement">Re-engagement Email</option>
-          </select>
-        </label>
-      </div>
+      <label>
+        Vibe / Tone (optional)
+        <select bind:value={vibe}>
+          <option value="">No vibe</option>
+          <option value="Soft Luxury">Soft Luxury</option>
+          <option value="Romantic">Romantic</option>
+          <option value="Urban Chic">Urban Chic</option>
+          <option value="Nordic Minimalist">Nordic Minimalist</option>
+          <option value="Family Warmth">Family Warmth</option>
+        </select>
+      </label>
 
-      <button class="btn" type="submit" disabled={loading}>
-        {#if loading}
-          Generating…
-        {:else}
-          Generate Email
-        {/if}
-      </button>
+      <label>
+        Email Type (Gearbox)
+        <select bind:value={emailType}>
+          <option value="">Choose type</option>
+          <option value="welcome">Welcome Email</option>
+          <option value="pre-stay">Pre-Stay Email</option>
+          <option value="on-stay">On-Stay Email</option>
+          <option value="post-stay">Post-Stay Email</option>
+          <option value="seasonal">Seasonal Campaign</option>
+          <option value="offer">Special Offer</option>
+          <option value="reengagement">Re-engagement Email</option>
+        </select>
+      </label>
+    </div>
 
-      {#if error}
-        <p class="error">{error}</p>
-      {/if}
-    </form>
-
-    <section class="output-section">
-      <h2>Generated Email</h2>
-
-      {#if loading && !output}
-        <p class="hint">Working on it…</p>
-      {/if}
-
-      {#if output}
-        <div class="output-container">
-          <pre>{output}</pre>
-        </div>
-      {:else if !loading}
-        <p class="hint">
-          Your email will appear here. Pick a type, then click “Generate”.
-        </p>
-      {/if}
-    </section>
+    <button on:click={generateEmail} disabled={loading}>
+      {loading ? "Generating..." : "Generate Email"}
+    </button>
   </div>
-</main>
+
+  <div class="card output-card">
+    <h2>Generated Email</h2>
+    <p class="note">Your email will appear below.</p>
+
+    {#if output}
+      <pre class="output">{output}</pre>
+    {/if}
+  </div>
+</div>
 
 <style>
-  .output-section {
-    margin-top: 2rem;
+  :global(body) {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    background: #fafafa;
+    color: #111;
   }
 
-  .output-section h2 {
-    margin: 0 0 0.75rem;
-    font-size: 1.1rem;
-    color: #392b21;
-  }
-
-  .output-container {
-    max-width: 100%;
-    max-height: 60vh;
-    overflow: auto;
-    border-radius: 0.75rem;
-    border: 1px solid #ccc;
-    padding: 1rem;
-    background: #fff;
-    white-space: pre-wrap;
-  }
-
-  .container {
-    max-width: 720px;
+  .page-container {
+    max-width: 820px;
     margin: 2rem auto;
-    padding: 1.5rem;
-    line-height: 1.6;
+    padding: 0 1rem;
+  }
+
+  h1 {
+    font-size: 2.4rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 2rem;
+  }
+
+  .card {
+    background: #fff;
+    padding: 1.75rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+  }
+
+  input,
+  select {
+    margin-top: 0.4rem;
+    padding: 0.6rem 0.7rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    background: #fff;
+  }
+
+  button {
+    margin-top: 1.5rem;
+    padding: 0.8rem 1.4rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 0.6rem;
+    background: #111;
+    color: white;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  button:hover:not(:disabled) {
+    background: #000;
+  }
+
+  .output-card {
+    margin-top: 1.5rem;
+  }
+
+  .note {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .output {
+    background: #f5f5f5;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    white-space: pre-wrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.95rem;
   }
 </style>
