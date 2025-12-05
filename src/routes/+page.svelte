@@ -1,220 +1,149 @@
 <script>
-  let hotelName = "";
-  let language = "";
-  let season = "";
-  let vibe = "";
-  let emailType = "";
-  let output = "";
-  let loading = false;
+	// ---------------------------------------------
+	// STATE
+	// ---------------------------------------------
+	let emailType = "welcome";
+	let subject = "";
+	let body = "";
 
-  async function generateEmail() {
-    if (!emailType) {
-      alert("Please choose an email type.");
-      return;
-    }
+	// ---------------------------------------------
+	// SUBJECT PRESETS (Minimalist Luxury)
+	// ---------------------------------------------
+	const subjectStyles = {
+		welcome: "A Little Escape, Waiting Just for You",
+		prestay: "Your Stay Is Approaching — A Personal Preview",
+		onstay: "Enhance Your Stay — Curated Just for You",
+		poststay: "Thank You for Staying — A Little Something Before You Go",
+		general: "A Moment of Calm, Delivered to Your Inbox"
+	};
 
-    loading = true;
-    output = "";
+	// Update subject automatically when user chooses email type
+	function updateSubject() {
+		subject = subjectStyles[emailType];
+	}
 
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        hotelName,
-        language,
-        season,
-        vibe,
-        emailType
-      })
-    });
-
-    const data = await res.json();
-    output = data.output || "No output received.";
-    loading = false;
-  }
+	// ---------------------------------------------
+	// COPY TO CLIPBOARD
+	// ---------------------------------------------
+	async function copyAll() {
+		const fullText = `Subject: ${subject}\n\n${body}`;
+		try {
+			await navigator.clipboard.writeText(fullText);
+			alert("✨ Copied! Paste away, Maestro.");
+		} catch (err) {
+			console.error(err);
+			alert("Copy failed — intern is already fired.");
+		}
+	}
 </script>
 
-<div class="page-container">
-  <h1>Nice-Lamp Email Engine</h1>
-  <p class="subtitle">Boutique Hospitality · Emotional Luxury · Powered by GPT-5.1</p>
-
-  <div class="card">
-    <h2>Email Generator</h2>
-
-    <div class="grid">
-      <label>
-        Hotel name
-        <input type="text" bind:value={hotelName} placeholder="Your hotel name" />
-      </label>
-
-      <label>
-        Language
-        <select bind:value={language}>
-          <option value="">Choose language</option>
-          <option value="de">Deutsch</option>
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-          <option value="nl">Nederlands</option>
-        </select>
-      </label>
-
-      <label>
-        Season (optional)
-        <select bind:value={season}>
-          <option value="">No season</option>
-          <option value="Winter">Winter</option>
-          <option value="Spring">Spring</option>
-          <option value="Summer">Summer</option>
-          <option value="Autumn">Autumn</option>
-          <option value="Christmas">Christmas</option>
-        </select>
-      </label>
-
-      <label>
-        Vibe / Tone (optional)
-        <select bind:value={vibe}>
-          <option value="">No vibe</option>
-          <option value="Soft Luxury">Soft Luxury</option>
-          <option value="Romantic">Romantic</option>
-          <option value="Urban Chic">Urban Chic</option>
-          <option value="Nordic Minimalist">Nordic Minimalist</option>
-          <option value="Family Warmth">Family Warmth</option>
-        </select>
-      </label>
-
-      <label>
-        Email Type (Gearbox)
-        <select bind:value={emailType}>
-          <option value="">Choose type</option>
-          <option value="welcome">Welcome Email</option>
-          <option value="pre-stay">Pre-Stay Email</option>
-          <option value="on-stay">On-Stay Email</option>
-          <option value="post-stay">Post-Stay Email</option>
-          <option value="seasonal">Seasonal Campaign</option>
-          <option value="offer">Special Offer</option>
-          <option value="reengagement">Re-engagement Email</option>
-        </select>
-      </label>
-    </div>
-
-    <button on:click={generateEmail} disabled={loading}>
-      {loading ? "Generating..." : "Generate Email"}
-    </button>
-  </div>
-
-  <div class="card output-card">
-    <h2>Generated Email</h2>
-    <p class="note">Your email will appear below.</p>
-
-    {#if output}
-      <pre class="output">{output}</pre>
-    {/if}
-  </div>
-</div>
-
 <style>
-  :global(body) {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-    background: #fafafa;
-    color: #111;
-  }
+	/* ---------------------------------------------
+	   MINIMALIST LUXURY STYLE (Nice-Lamp Authentic)
+	   --------------------------------------------- */
 
-  .page-container {
-    max-width: 820px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-  }
+	:root {
+		--pink: #D84171;
+		--dark: #392B21;
+		--light: #F6F4EF;
+		--mid: #B4A298;
+		--gold: #D4AF37;
+		--radius: 10px;
+	}
 
-  h1 {
-    font-size: 2.4rem;
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: 0.25rem;
-  }
+	body {
+		font-family: "Raleway", sans-serif;
+		background: var(--light);
+		color: var(--dark);
+		margin: 0;
+		padding: 2rem;
+	}
 
-  .subtitle {
-    text-align: center;
-    font-size: 0.95rem;
-    color: #666;
-    margin-bottom: 2rem;
-  }
+	h1 {
+		font-family: "Cormorant Garamond", serif;
+		font-size: 2.6rem;
+		font-weight: 500;
+		color: var(--dark);
+		margin-bottom: 1rem;
+	}
 
-  .card {
-    background: #fff;
-    padding: 1.75rem;
-    border-radius: 1rem;
-    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.04);
-    margin-bottom: 2rem;
-  }
+	.section {
+		background: white;
+		padding: 1.5rem;
+		border-radius: var(--radius);
+		box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+		margin-bottom: 1.5rem;
+	}
 
-  h2 {
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-    font-weight: 600;
-  }
+	label {
+		font-weight: 600;
+		display: block;
+		margin-bottom: 0.5rem;
+		color: var(--dark);
+	}
 
-  .grid {
-    display: grid;
-    gap: 1.25rem;
-    grid-template-columns: 1fr 1fr;
-  }
+	select, textarea {
+		width: 100%;
+		padding: 0.8rem;
+		border-radius: var(--radius);
+		border: 1px solid var(--mid);
+		font-size: 1rem;
+		margin-bottom: 1rem;
+		background: #fff;
+	}
 
-  label {
-    display: flex;
-    flex-direction: column;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #333;
-  }
+	.subject-preview {
+		font-family: "Cormorant Garamond", serif;
+		font-size: 1.6rem;
+		padding: 1rem;
+		border-left: 4px solid var(--pink);
+		background: #fff8fb;
+		color: var(--dark);
+		margin-bottom: 1.5rem;
+		border-radius: var(--radius);
+	}
 
-  input,
-  select {
-    margin-top: 0.4rem;
-    padding: 0.6rem 0.7rem;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 0.5rem;
-    background: #fff;
-  }
+	button.copy {
+		background: var(--pink);
+		color: white;
+		padding: 0.8rem 1.4rem;
+		border-radius: var(--radius);
+		font-weight: 600;
+		border: none;
+		cursor: pointer;
+		font-size: 1rem;
+		transition: 0.2s ease;
+	}
 
-  button {
-    margin-top: 1.5rem;
-    padding: 0.8rem 1.4rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 0.6rem;
-    background: #111;
-    color: white;
-    cursor: pointer;
-    transition: 0.15s ease;
-  }
-
-  button:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-
-  button:hover:not(:disabled) {
-    background: #000;
-  }
-
-  .output-card {
-    margin-top: 1.5rem;
-  }
-
-  .note {
-    font-size: 0.85rem;
-    color: #666;
-    margin-bottom: 1rem;
-  }
-
-  .output {
-    background: #f5f5f5;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    white-space: pre-wrap;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.95rem;
-  }
+	button.copy:hover {
+		background: var(--dark);
+	}
 </style>
+
+<!-- ---------------------------------------------
+	APP UI — CLEAN, COMPLETE
+---------------------------------------------- -->
+
+<h1>Nice-Lamp Email Generator</h1>
+
+<div class="section">
+	<label for="type">Email Type</label>
+	<select id="type" bind:value={emailType} on:change={updateSubject}>
+		<option value="welcome">Welcome Email</option>
+		<option value="prestay">Pre-Stay Email</option>
+		<option value="onstay">On-Stay Email</option>
+		<option value="poststay">Post-Stay Email</option>
+		<option value="general">General Newsletter</option>
+	</select>
+
+	<div class="subject-preview">
+		<strong>Subject:</strong> {subject}
+	</div>
+
+	<label for="body">Email Body</label>
+	<textarea id="body" rows="10" bind:value={body} placeholder="Write or auto-generate your boutique email here..."></textarea>
+
+	<button class="copy" on:click={copyAll}>
+		📋 Copy to Clipboard
+	</button>
+</div>
