@@ -1,7 +1,4 @@
 <script>
-  // ---------------------------------------------
-  // STATE
-  // ---------------------------------------------
   let hotelName = "";
   let language = "";
   let season = "";
@@ -10,37 +7,6 @@
   let output = "";
   let loading = false;
 
-  // ---------------------------------------------
-  // SUBJECT STYLING (Minimalist Luxury)
-  // ---------------------------------------------
-  const subjectPresets = {
-    "welcome": "A Little Escape, Waiting Just for You",
-    "pre-stay": "Your Stay Is Approaching — A Personal Preview",
-    "on-stay": "Enhance Your Stay — Curated Especially for You",
-    "post-stay": "Thank You for Staying — A Thought Before You Go",
-    "seasonal": "A Seasonal Moment Crafted for You",
-    "offer": "A Boutique Offer Reserved Just for You",
-    "reengagement": "We Miss You — A Warm Invitation to Return"
-  };
-
-  $: subjectLine = emailType ? subjectPresets[emailType] : "";
-
-  // ---------------------------------------------
-  // COPY TO CLIPBOARD
-  // ---------------------------------------------
-  async function copyAll() {
-    const finalText = `Subject: ${subjectLine}\n\n${output}`;
-    try {
-      await navigator.clipboard.writeText(finalText);
-      alert("✨ Copied to clipboard!");
-    } catch (err) {
-      alert("Copy failed. Intern already punished.");
-    }
-  }
-
-  // ---------------------------------------------
-  // GENERATE EMAIL
-  // ---------------------------------------------
   async function generateEmail() {
     if (!emailType) {
       alert("Please choose an email type.");
@@ -65,6 +31,16 @@
     const data = await res.json();
     output = data.output || "No output received.";
     loading = false;
+  }
+
+  // COPY TO CLIPBOARD
+  async function copyAll() {
+    try {
+      await navigator.clipboard.writeText(output);
+      alert("✨ Copied to clipboard!");
+    } catch (err) {
+      alert("Copy failed. Please try again.");
+    }
   }
 </script>
 
@@ -131,11 +107,6 @@
       </label>
     </div>
 
-    <!-- SUBJECT PREVIEW -->
-    <div class="subject-preview">
-      <strong>Subject:</strong> {subjectLine || "—"}
-    </div>
-
     <button on:click={generateEmail} disabled={loading}>
       {loading ? "Generating..." : "Generate Email"}
     </button>
@@ -143,7 +114,7 @@
 
   <div class="card output-card">
     <h2>Generated Email</h2>
-    <p class="note">Your generated boutique email will appear below.</p>
+    <p class="note">Your email will appear below.</p>
 
     {#if output}
       <pre class="output">{output}</pre>
@@ -191,22 +162,34 @@
     margin-bottom: 2rem;
   }
 
+  h2 {
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
   .grid {
     display: grid;
     gap: 1.25rem;
     grid-template-columns: 1fr 1fr;
   }
 
-  .subject-preview {
-    margin-top: 1rem;
-    margin-bottom: 1.5rem;
-    padding: 0.9rem 1rem;
-    border-left: 4px solid #D84171;
-    background: #fff7fa;
+  label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+  }
+
+  input,
+  select {
+    margin-top: 0.4rem;
+    padding: 0.6rem 0.7rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
     border-radius: 0.5rem;
-    font-family: "Cormorant Garamond", serif;
-    font-size: 1.25rem;
-    color: #392B21;
+    background: #fff;
   }
 
   button {
@@ -221,6 +204,15 @@
     transition: 0.15s ease;
   }
 
+  button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  button:hover:not(:disabled) {
+    background: #000;
+  }
+
   .copy {
     margin-top: 1rem;
     background: #D84171;
@@ -229,6 +221,16 @@
 
   .copy:hover {
     background: #392B21;
+  }
+
+  .output-card {
+    margin-top: 1.5rem;
+  }
+
+  .note {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 1rem;
   }
 
   .output {
