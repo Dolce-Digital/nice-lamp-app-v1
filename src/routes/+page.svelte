@@ -158,103 +158,8 @@
 </main>
 
 <style>
-  .page {
-    min-height: 100vh;
-    background: #f6f4ef;
-    padding: 2rem 1rem;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont,
-      "Segoe UI", sans-serif;
-  }
-
-  .nl-container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: #ffffff;
-    border-radius: 1rem;
-    padding: 2rem 2.5rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
-  }
-
-  .title {
-    margin: 0 0 0.5rem;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #392b21;
-  }
-
-  .subtitle {
-    margin: 0 0 1.5rem;
-    color: #6b5a4b;
-    font-size: 0.95rem;
-  }
-
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .field-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .two-cols {
-    flex-direction: row;
-    gap: 1rem;
-  }
-
-  .two-cols > label {
-    flex: 1;
-  }
-
-  label {
-    font-size: 0.9rem;
-    color: #392b21;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-  }
-
-  input,
-  select {
-    border-radius: 0.5rem;
-    border: 1px solid #d4c7bc;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.95rem;
-    outline: none;
-  }
-
-  input:focus,
-  select:focus {
-    border-color: #d84171;
-    box-shadow: 0 0 0 1px rgba(216, 65, 113, 0.2);
-  }
-
-  .btn {
-    align-self: flex-start;
-    margin-top: 0.5rem;
-    padding: 0.6rem 1.4rem;
-    border-radius: 999px;
-    border: none;
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    background: #d84171;
-    color: #ffffff;
-  }
-
-  .btn:disabled {
-    opacity: 0.7;
-    cursor: default;
-  }
-
-  .error {
-    margin-top: 0.5rem;
-    color: #b3261e;
-    font-size: 0.9rem;
+  .output-section {
+    margin-top: 2rem;
   }
 
   .output-section h2 {
@@ -268,5 +173,16 @@
     max-height: 60vh;
     overflow: auto;
     border-radius: 0.75rem;
-   border: 1px solid #ccc;
-}
+    border: 1px solid #ccc;
+    padding: 1rem;
+    background: #fff;
+    white-space: pre-wrap;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    line-height: 1.6;
+  }
+</style>
