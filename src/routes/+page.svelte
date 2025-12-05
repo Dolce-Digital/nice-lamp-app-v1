@@ -268,4 +268,5 @@
     max-height: 60vh;
     overflow: auto;
     border-radius: 0.75rem;
-    border: 1px sol
+   border: 1px solid #ccc;
+
